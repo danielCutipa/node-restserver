@@ -9,7 +9,12 @@ const UserSchema = Schema({
   },
   password: { type: String, required: [true, 'The password is required!'] },
   img: { type: String },
-  rol: { type: String, required: true, enum: ['ADMIN_ROLE', 'USER_ROLE'] },
+  rol: {
+    type: String,
+    default: 'USER_ROLE',
+    required: true,
+    enum: ['ADMIN_ROLE', 'USER_ROLE']
+  },
   state: { type: Boolean, default: true },
   google: { type: Boolean, default: false }
 })
