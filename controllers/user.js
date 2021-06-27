@@ -1,36 +1,47 @@
 const { request, response } = require('express')
+const bcryptjs = require('bcryptjs')
 
-const usersGet = (req = request, res = response) => {
-  const query = req.query
+const User = require('../models/user')
 
-  res.json({
-    ok: true,
-    msg: 'GET API controller',
-    query
-  })
+const usersGet = async (req = request, res = response) => {
+  const { limit = 5, from = 0 } = req.query
+  const query = { state: true }
+  const [users, total] = await Promise.all([
+    User.find(query).limit(Number(limit)).skip(Number(from)),
+    User.countDocuments(query)
+  ])
+
+  res.json({ total, users })
 }
 
-const userPost = (req, res = response) => {
-  const body = req.body
+const userPost = async (req = request, res = response) => {
+  const { name, email, password, rol } = req.body
+  const user = new User({ name, email, password, rol })
 
-  res.json({
-    ok: true,
-    msg: 'POST API controller',
-    body
-  })
+  // encrypt the password
+  const salt = bcryptjs.genSaltSync()
+  user.password = bcryptjs.hashSync(password, salt)
+
+  await user.save()
+
+  res.json(user)
 }
 
-const userPut = (req, res = response) => {
-  const id = req.params.id
+const userPut = async (req = request, res = response) => {
+  const { id } = req.params
+  const { _id, password, google, email, ...args } = req.body
 
-  res.json({
-    ok: true,
-    msg: 'PUT API controller',
-    id
-  })
+  if (password) {
+    const salt = bcryptjs.genSaltSync()
+    args.password = bcryptjs.hashSync(password, salt)
+  }
+
+  const user = await User.findByIdAndUpdate(id, args)
+
+  res.json(user)
 }
 
-const userPatch = (req, res = response) => {
+const userPatch = (req = request, res = response) => {
   const id = req.params.id
 
   res.json({
@@ -39,13 +50,14 @@ const userPatch = (req, res = response) => {
   })
 }
 
-const userDelete = (req, res = response) => {
-  const id = req.params.id
+const userDelete = async (req = request, res = response) => {
+  const { id } = req.params
+  // fisicamente lo borramos
+  // const user = await User.findByIdAndDelete(id)
 
-  res.json({
-    ok: true,
-    msg: 'DELETE API controller'
-  })
+  const user = await User.findByIdAndUpdate(id, { state: false })
+
+  res.json(user)
 }
 
 module.exports = {
