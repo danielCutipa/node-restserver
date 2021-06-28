@@ -1,6 +1,6 @@
 const { request, response } = require('express')
 
-const validateRole = (req = request, res = response, next) => {
+const isAdminRole = (req = request, res = response, next) => {
   const { user } = req
 
   if (!user) {
@@ -28,4 +28,4 @@ const hasRole = (...roles) => {
   }
 }
 
-module.exports = { validateRole, hasRole }
+module.exports = { isAdminRole, hasRole }
