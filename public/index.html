@@ -11,53 +11,53 @@
       name="google-signin-client_id"
       content="514773539609-q24alcqp0afsevqhu07951k753npt2v9.apps.googleusercontent.com"
     />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
   </head>
-  <body>
-    <h1>Google Sign in</h1>
+  <body class="container">
+    <div class="row mt-5">
+      <div class="col-sm-6">
+        <h1>Google Sign in</h1>
+        <hr />
+        <div
+          class="g-signin2"
+          data-onsuccess="onSignIn"
+          data-theme="dark"
+        ></div>
 
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+        <a href="#" onclick="signOut();">Sign out</a>
+      </div>
+      <div class="col-sm-6">
+        <h1>Login manual</h1>
+        <hr />
+        <form class="d-grid">
+          <input
+            type="text"
+            name="email"
+            class="form-control mb-2"
+            placeholder="Email"
+            value="user15@user.com"
+          />
+          <input
+            type="text"
+            name="password"
+            class="form-control mb-2"
+            placeholder="Password"
+            value="123456"
+          />
 
-    <a href="#" onclick="signOut();">Sign out</a>
+          <button type="submit" class="btn btn-primary">Ingresar</button>
+        </form>
+      </div>
+    </div>
 
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
-    <script>
-      const url = window.location.hostname.includes('localhost')
-        ? 'http://localhost:8080/api/auth/google'
-        : 'https://restserver-curso-node-daniel.herokuapp.com/api/auth/google'
-
-      function onSignIn(googleUser) {
-        // Useful data for your client-side scripts:
-        var profile = googleUser.getBasicProfile()
-        console.log('ID: ' + profile.getId()) // Don't send this directly to your server!
-        console.log('Full Name: ' + profile.getName())
-        console.log('Given Name: ' + profile.getGivenName())
-        console.log('Family Name: ' + profile.getFamilyName())
-        console.log('Image URL: ' + profile.getImageUrl())
-        console.log('Email: ' + profile.getEmail())
-
-        // The ID token you need to pass to your backend:
-        var id_token = googleUser.getAuthResponse().id_token
-        console.log('ID Token: ' + id_token)
-
-        const data = { id_token }
-
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        })
-          .then((res) => res.json())
-          .then((data) => console.log('Nuestro SERVER', data))
-          .catch(console.log)
-      }
-
-      function signOut() {
-        var auth2 = gapi.auth2.getAuthInstance()
-        auth2.signOut().then(function () {
-          console.log('User signed out.')
-        })
-      }
-    </script>
+    <script src="./js/auth.js"></script>
   </body>
 </html>

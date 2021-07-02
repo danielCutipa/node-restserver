@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken')
 
+const { User } = require('../models')
+
 const generateJWT = (uid = '') => {
   return new Promise((res, rej) => {
     const payload = { uid }
@@ -21,4 +23,24 @@ const generateJWT = (uid = '') => {
     )
   })
 }
-module.exports = { generateJWT }
+
+const checkJWT = async (token = '') => {
+  try {
+    if (token.length < 10) {
+      return null
+    }
+
+    const { uid } = jwt.verify(token, process.env.SECRET_KEY)
+
+    const user = await User.findById(uid)
+
+    if (user && user.state) {
+      return user
+    }
+    return null
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+module.exports = { generateJWT, checkJWT }
